@@ -1,5 +1,12 @@
 import Image from "next/image";
-import Link from "next/link"; // Link 컴포넌트 불러오기
+import Link from "next/link";
+
+//css 로드
+import "./bootstrap-grid.min.css";
+import "./reset.css";
+import "./common.css";
+import "./default.css";
+import "./responsive.css";
 
 export const metadata = {
   title: "Minimal portfolio",
@@ -16,7 +23,6 @@ export default function RootLayout({ children }) {
           </h1>
           <nav>
             <ul>
-              {/* a 태그 대신 Link 사용 및 .html 제거 */}
               <li>
                 <Link href="/">Home</Link>
               </li>
@@ -34,7 +40,7 @@ export default function RootLayout({ children }) {
         </header>
         <hr />
         <main className="content">
-          <div className="container latest_portfolio">{children}</div>
+          <div className="container">{children}</div>
         </main>
         <footer>
           <div className="quote_area">
@@ -44,7 +50,7 @@ export default function RootLayout({ children }) {
               information as well as your project description and available budget.
             </p>
             <p>
-              <Link href="/contact">Get a free quote &rarr;</Link>
+              <a href="">Get a free quote &rarr;</a>
             </p>
           </div>
           <div className="copyright">
@@ -56,19 +62,18 @@ export default function RootLayout({ children }) {
               <a href="mailto:hello@adipurdila.com">hello@adipurdila.com</a>
             </p>
             <ul className="social_links">
-              {/* Image 태그 맨 끝에 / 를 붙여서 닫아줌 */}
               <li>
-                <a href="#">
+                <a href="">
                   <Image src="/images/twitter.png" width={32} height={32} alt="twitter" />
                 </a>
               </li>
               <li>
-                <a href="#">
+                <a href="">
                   <Image src="/images/facebook.png" width={32} height={32} alt="facebook" />
                 </a>
               </li>
               <li>
-                <a href="#">
+                <a href="">
                   <Image src="/images/dribble.png" width={32} height={32} alt="dribble" />
                 </a>
               </li>
