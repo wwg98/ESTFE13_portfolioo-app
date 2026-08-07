@@ -1,31 +1,47 @@
 "use client";
 
 import { createClient } from "@/utils/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Insert() {
   const supabase = createClient();
   const router = useRouter();
 
-  const [formData, setFormData] = useState({
+  const INITIAL_PORTFOLIO = {
     title: "",
     content: "",
     url: "",
     review: "",
     reviewer: "",
-    rep1_img: "",
-    rep1_desc: "",
-    rep2_img: "",
-    rep2_desc: "",
-    thumbnail: "",
-  });
+  };
+  const createInitialImages = () => [
+    {
+      file: null,
+      decription: "",
+      displayOrder: 1,
+    },
+    {
+      file: null,
+      decription: "",
+      displayOrder: 2,
+    },
+  ];
+
+  const [portfolio, setPortfolio] = useState(INITIAL_PORTFOLIO);
+  const [portfolioImages, setPortfolioImages] = useState(createInitialImages);
 
   const [thumbnail, setThumbnail] = useState(null);
   const [user, setUser] = useState(null);
   const [authForm, setAuthForm] = useState({
     email: "",
     password: "",
+  });
+
+  const fileRef = useRef({
+    image1: null,
+    image2: null,
+    thumbnail: null,
   });
 
   useEffect(() => {
@@ -61,13 +77,26 @@ export default function Insert() {
     }
   }
 
-  const handleChange = (e) => {
+  const handlePortfolioChange = (e) => {
     const { name, value } = e.target;
-
-    setFormData({
-      ...formData,
+    setPortfolio((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
+  };
+
+  const handlePortfolioFileChange = (index) => (e) => {
+    const selectedFile = e.target.files?.[0] ?? null;
+    setPortfolioImages((prev) =>
+      prev.map((image, idx) => (index === idx ? { ...image, file: selectedFile } : { image })),
+    );
+  };
+
+  const handlePortfolioDescChange = (index) => (e) => {
+    const { value } = e.target;
+    setPortfolioImages((prev) =>
+      prev.map((image, idx) => (index === idx ? { ...image, decription: value } : { image })),
+    );
   };
 
   const handleAuthChange = (e) => {
@@ -76,7 +105,7 @@ export default function Insert() {
     setAuthForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
+  const handleThumbnailFileChange = (e) => {
     setThumbnail(e.target.files[0]);
   };
 
@@ -157,7 +186,7 @@ export default function Insert() {
               name="title"
               placeholder="프로젝트 이름"
               required
-              onChange={handleChange}
+              onChange={handlePortfolioChange}
             />
           </p>
           <p className="field">
@@ -169,7 +198,7 @@ export default function Insert() {
               rows="10"
               placeholder="프로젝트 설명"
               required
-              onChange={handleChange}></textarea>
+              onChange={handlePortfolioChange}></textarea>
           </p>
           <p className="field">
             <label htmlFor="url">프로젝트 주소:</label>
@@ -178,7 +207,7 @@ export default function Insert() {
               id="url"
               name="url"
               placeholder="프로젝트 주소"
-              onChange={handleChange}
+              onChange={handlePortfolioChange}
             />
           </p>
           <p className="field">
@@ -189,7 +218,7 @@ export default function Insert() {
               cols="30"
               rows="10"
               placeholder="프로젝트 후기"
-              onChange={handleChange}></textarea>
+              onChange={handlePortfolioChange}></textarea>
           </p>
           <p className="field">
             <label htmlFor="reviewer">후기 글쓴이:</label>
@@ -198,24 +227,46 @@ export default function Insert() {
               id="reviewer"
               name="reviewer"
               placeholder="후기 글쓴이"
-              onChange={handleChange}
+              onChange={handlePortfolioChange}
             />
           </p>
           <p className="field">
             <label htmlFor="rep1_img">대표 이미지 1:</label>
-            <input type="fiile" id="rep1_img" name="rep1_img" accept="image/*" />
+            <input
+              type="file"
+              id="rep1_img"
+              name="rep1_img"
+              accept="image/*"
+              onChange={handlePortfolioFileChange(0)}
+            />
           </p>
           <p className="field">
             <label htmlFor="rep1_desc">대표 이미지 1 설명</label>
-            <input type="text" id="rep1_desc" name="rep1_desc" onChange={handleChange} />
+            <input
+              type="text"
+              id="rep1_desc"
+              name="rep1_desc"
+              onChange={handlePortfolioDescChange(0)}
+            />
           </p>
           <p className="field">
             <label htmlFor="rep2_img">대표 이미지 2:</label>
-            <input type="fiile" id="rep2_img" name="rep2_img" accept="image/*" />
+            <input
+              type="file"
+              id="rep2_img"
+              name="rep2_img"
+              accept="image/*"
+              onChange={handlePortfolioFileChange(1)}
+            />
           </p>
           <p className="field">
             <label htmlFor="rep2_desc">대표 이미지 2 설명</label>
-            <input type="text" id="rep2_desc" name="rep2_desc" onChange={handleChange} />
+            <input
+              type="text"
+              id="rep2_desc"
+              name="rep2_desc"
+              onChange={handlePortfolioDescChange(1)}
+            />
           </p>
           <p className="field">
             <label htmlFor="thumbnail">썸네일:</label>
@@ -224,7 +275,7 @@ export default function Insert() {
               id="thumbnail"
               name="thumbnail"
               accept="image/*"
-              onChange={handleFileChange}
+              onChange={handleThumbnailFileChange}
             />
           </p>
           <p className="submit">
