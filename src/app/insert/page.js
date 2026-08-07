@@ -39,16 +39,25 @@ export default function Insert() {
 
   async function insertData(e) {
     e.preventDefault();
-    const { error } = await supabase.from("portfolio").insert(formData);
+    //파일 업로드 후 경로 저장
+    let thumbnanilPath = null;
+    if (thumbnail) {
+      thumbnanilPath = await uploadThumbnail(thumbnail);
+      if (!thumbnanilPath) {
+        alert("파일 업로드 실패");
+        return; // 파일 업로드 실패시 글 등록 취소
+      }
+    }
+
+    const { error } = await supabase
+      .from("portfolio")
+      .insert({ ...formData, thumbnail: thumbnanilPath });
     if (error) {
       console.log(error);
     } else {
       console.log("데이터 입력 성공");
       router.push("/");
       router.refresh();
-    }
-    if (thumbnail) {
-      await uploadThumbnail(thumbnail);
     }
   }
 
@@ -73,16 +82,15 @@ export default function Insert() {
 
   async function uploadThumbnail(file) {
     const ext = file.name.split(".").pop();
-    const fileName = `${crypto.randomUUID()}.${ext}`;
-    const { data, error } = await supabase.storage
-      .from("portfolio")
-      .upload(`thumbnail/${fileName}`, file);
+    const filePath = `thumbnail/${crypto.randomUUID()}.${ext}`;
+    const { data, error } = await supabase.storage.from("portfolio").upload(filePath, file);
     if (error) {
       // Handle error
       console.error("파일 업로드 실패:", error);
     } else {
       // Handle success
       console.log("파일 업로드 성공:");
+      return filePath;
     }
   }
 
